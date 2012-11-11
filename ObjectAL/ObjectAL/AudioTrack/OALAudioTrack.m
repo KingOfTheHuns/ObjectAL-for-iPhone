@@ -973,6 +973,14 @@
 	}
 }
 
+-(void)audioPlayerEndInterruption:(AVAudioPlayer *)playerIn withOptions:(NSUInteger)flags {
+	if([delegate respondsToSelector:@selector(audioPlayerEndInterruption:withOptions:)])
+	{
+		[delegate audioPlayerEndInterruption:playerIn withOptions:flags];
+	}
+}
+
+
 #if defined(__MAC_10_7) || defined(__IPHONE_4_0)
 - (void)audioPlayerEndInterruption:(AVAudioPlayer *)playerIn withFlags:(NSUInteger)flags
 {
