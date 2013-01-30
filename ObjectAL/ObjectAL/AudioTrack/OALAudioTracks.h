@@ -43,7 +43,7 @@
 	bool paused;
     
     /** Timer to poll deviceCurrentTime so that it doesn't get reset on a device */
-    NSTimer* deviceTimePoller;
+    //NSTimer* deviceTimePoller;
 	
 	/** Handles suspending and interrupting for this object. */
 	OALSuspendHandler* suspendHandler;

@@ -46,7 +46,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS_PROTOTYPE(OALAudioTracks);
  * as a workaround for a bug in iOS devices that causes the value
  * to reset to 0 in certain circumstances.
  */
-- (void) pollDeviceTime;
+//- (void) pollDeviceTime;
 
 @end
 /** \endcond */
@@ -76,11 +76,11 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(OALAudioTracks);
 		{
             // Need to constantly poll deviceCurrentTime or else it resets to 0
             // on devices (doesn't happen in simulator).
-            deviceTimePoller = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                                                target:self
-                                                              selector:@selector(pollDeviceTime)
-                                                              userInfo:nil
-                                                               repeats:YES];
+//            deviceTimePoller = [NSTimer scheduledTimerWithTimeInterval:1.0
+//                                                                target:self
+//                                                              selector:@selector(pollDeviceTime)
+//                                                              userInfo:nil
+//                                                               repeats:YES];
         }
     }
 	return self;
@@ -90,7 +90,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(OALAudioTracks);
 {
 	OAL_LOG_DEBUG(@"%@: Dealloc", self);
 	[[OALAudioSession sharedInstance] removeSuspendListener:self];
-    [deviceTimePoller invalidate];
+    //[deviceTimePoller invalidate];
 
 	as_release(tracks);
 	as_release(suspendHandler);
@@ -214,16 +214,16 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(OALAudioTracks);
 	}
 }
 
-- (void) pollDeviceTime
-{
-	@synchronized(tracks)
-	{
-        // Only actually have to poll a single track's value to avoid the bug.
-        if([tracks count] > 0)
-        {
-            [[tracks objectAtIndex:0] deviceCurrentTime];
-        }
-    }
-}
+//- (void) pollDeviceTime
+//{
+//	@synchronized(tracks)
+//	{
+//        // Only actually have to poll a single track's value to avoid the bug.
+//        if([tracks count] > 0)
+//        {
+//            [[tracks objectAtIndex:0] deviceCurrentTime];
+//        }
+//    }
+//}
 
 @end
