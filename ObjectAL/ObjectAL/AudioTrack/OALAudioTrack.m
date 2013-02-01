@@ -505,88 +505,91 @@
 	 *
 	 * TODO: Need to find a way to avoid this situation.
 	 */
-	if(value)
+	OPTIONALLY_SYNCHRONIZED(self)
 	{
-		if(preloaded)
-		{
-			currentTime = player.currentTime;
-			if(self.playing)
-			{
-				[player stop];
-			}
-		}
-	}
-	else
-	{
-		if(preloaded)
-		{
-			NSError* error;
-			as_release(player);
-			player = [[AVAudioPlayer alloc] initWithContentsOfURL:currentlyLoadedUrl error:&error];
-			if(nil != error)
-			{
-				OAL_LOG_ERROR(@"%@: Could not reload URL %@: %@",
-							  self, currentlyLoadedUrl, [error localizedDescription]);
-				as_release(player);
-				player = nil;
-				preloaded = NO;
-				playing = NO;
-				paused = NO;
-				return;
-			}
-			
-			player.volume = muted ? 0 : gain;
-			player.numberOfLoops = numberOfLoops;
-			player.meteringEnabled = meteringEnabled;
-			player.delegate = self;
-			if([IOSVersion sharedInstance].version >= 4.0)
-			{
-				player.pan = pan;
-			}
-			
-			player.currentTime = currentTime;
-			
-			if(![player prepareToPlay])
-			{
-				OAL_LOG_ERROR(@"%@: Failed to prepareToPlay on resume: %@", self, currentlyLoadedUrl);
-				as_release(player);
-				player = nil;
-				preloaded = NO;
-				playing = NO;
-				paused = NO;
-				return;
-			}
-			
-			if(playing)
-			{
-				playing = [player play];
-				if(paused)
-				{
-					[player pause];
-				}
-			}
-		}
-	}
+        if(value)
+        {
+            if(preloaded)
+            {
+                currentTime = player.currentTime;
+                if(self.playing)
+                {
+                    [player stop];
+                }
+            }
+        }
+        else
+        {
+            if(preloaded)
+            {
+                NSError* error;
+                as_release(player);
+                player = [[AVAudioPlayer alloc] initWithContentsOfURL:currentlyLoadedUrl error:&error];
+                if(nil != error)
+                {
+                    OAL_LOG_ERROR(@"%@: Could not reload URL %@: %@",
+                                  self, currentlyLoadedUrl, [error localizedDescription]);
+                    as_release(player);
+                    player = nil;
+                    preloaded = NO;
+                    playing = NO;
+                    paused = NO;
+                    return;
+                }
 
-	
-	/*
-	if(value)
-	{
-		if(self.playing && !self.paused)
-		{
-			currentTime = player.currentTime;
-			[player pause];
-		}
-	}
-	else
-	{
-		if(self.playing && !self.paused)
-		{
-			player.currentTime = currentTime;
-			[player play];
-		}
-	}
-	 */
+                player.volume = muted ? 0 : gain;
+                player.numberOfLoops = numberOfLoops;
+                player.meteringEnabled = meteringEnabled;
+                player.delegate = self;
+                if([IOSVersion sharedInstance].version >= 4.0)
+                {
+                    player.pan = pan;
+                }
+
+                player.currentTime = currentTime;
+
+                if(![player prepareToPlay])
+                {
+                    OAL_LOG_ERROR(@"%@: Failed to prepareToPlay on resume: %@", self, currentlyLoadedUrl);
+                    as_release(player);
+                    player = nil;
+                    preloaded = NO;
+                    playing = NO;
+                    paused = NO;
+                    return;
+                }
+                
+                if(playing)
+                {
+                    playing = [player play];
+                    if(paused)
+                    {
+                        [player pause];
+                    }
+                }
+            }
+        }
+        
+        
+        /*
+        if(value)
+        {
+            if(self.playing && !self.paused)
+            {
+                currentTime = player.currentTime;
+                [player pause];
+            }
+        }
+        else
+        {
+            if(self.playing && !self.paused)
+            {
+                player.currentTime = currentTime;
+                [player play];
+            }
+        }
+         */
+    }
 }
 
 
@@ -973,15 +976,15 @@
 	}
 }
 
--(void)audioPlayerEndInterruption:(AVAudioPlayer *)playerIn withOptions:(NSUInteger)flags {
+- (void)audioPlayerEndInterruption:(AVAudioPlayer *)playerIn withOptions:(NSUInteger)flags
+{
 	if([delegate respondsToSelector:@selector(audioPlayerEndInterruption:withOptions:)])
 	{
 		[delegate audioPlayerEndInterruption:playerIn withOptions:flags];
 	}
 }
 
-
-#if defined(__MAC_10_7) || defined(__IPHONE_4_0)
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_6_0
 - (void)audioPlayerEndInterruption:(AVAudioPlayer *)playerIn withFlags:(NSUInteger)flags
 {
 	if([delegate respondsToSelector:@selector(audioPlayerEndInterruption:withFlags:)])
@@ -989,7 +992,6 @@
 		[delegate audioPlayerEndInterruption:playerIn withFlags:flags];
 	}
 }
-#endif
 
 - (void) audioPlayerEndInterruption:(AVAudioPlayer*) playerIn
 {
@@ -998,7 +1000,8 @@
 		[delegate audioPlayerEndInterruption:playerIn];
 	}
 }
-#endif //TARGET_OS_IPHONE
+#endif // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_6_0
+#endif // TARGET_OS_IPHONE
 
 - (void) audioPlayerDecodeErrorDidOccur:(AVAudioPlayer*) playerIn error:(NSError*) error
 {
